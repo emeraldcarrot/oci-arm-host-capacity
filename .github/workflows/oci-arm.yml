@@ -1,0 +1,36 @@
+name: OCI ARM Instance Creation
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  create-instance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - name: Create OCI config
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_KEY_FILE_CONTENT }}" > ~/.oci/key.pem
+          chmod 600 ~/.oci/key.pem
+          cat << EOF > ~/.oci/config
+          [DEFAULT]
+          user=${{ secrets.OCI_USER_OCID }}
+          fingerprint=${{ secrets.OCI_FINGERPRINT }}
+          tenancy=${{ secrets.OCI_TENANCY_OCID }}
+          region=${{ secrets.OCI_REGION }}
+          key_file=~/.oci/key.pem
+          EOF
+      - name: Run instance creation
+        run: |
+          cp .env.example .env
+          sed -i 's|OCI_AVAILABILITY_DOMAIN=.*|OCI_AVAILABILITY_DOMAIN=${{ secrets.OCI_AVAILABILITY_DOMAIN }}|' .env
+          sed -i 's|OCI_SUBNET_ID=.*|OCI_SUBNET_ID=${{ secrets.OCI_SUBNET_ID }}|' .env
+          sed -i 's|OCI_IMAGE_ID=.*|OCI_IMAGE_ID=${{ secrets.OCI_IMAGE_ID }}|' .env
+          sed -i 's|OCI_SSH_AUTHORIZED_KEYS=.*|OCI_SSH_AUTHORIZED_KEYS=${{ secrets.SSH_AUTHORIZED_KEYS }}|' .env
+          php index.php
