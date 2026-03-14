@@ -28,6 +28,7 @@ jobs:
           EOF
       - name: Run instance creation
         run: |
+          composer install --no-interaction --prefer-dist
           cp .env.example .env
           sed -i 's|OCI_AVAILABILITY_DOMAIN=.*|OCI_AVAILABILITY_DOMAIN=${{ secrets.OCI_AVAILABILITY_DOMAIN }}|' .env
           sed -i 's|OCI_SUBNET_ID=.*|OCI_SUBNET_ID=${{ secrets.OCI_SUBNET_ID }}|' .env
