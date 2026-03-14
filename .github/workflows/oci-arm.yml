@@ -16,16 +16,8 @@ jobs:
       - name: Create OCI config
         run: |
           mkdir -p ~/.oci
-          echo "${{ secrets.OCI_KEY_FILE_CONTENT }}" > ~/.oci/key.pem
-          chmod 600 ~/.oci/key.pem
-          cat << EOF > ~/.oci/config
-          [DEFAULT]
-          user=${{ secrets.OCI_USER_OCID }}
-          fingerprint=${{ secrets.OCI_FINGERPRINT }}
-          tenancy=${{ secrets.OCI_TENANCY_OCID }}
-          region=${{ secrets.OCI_REGION }}
-          key_file=~/.oci/key.pem
-          EOF
+          echo "${{ secrets.OCI_KEY_FILE_CONTENT }}" > $HOME/.oci/key.pem
+          chmod 600 $HOME/.oci/key.pem
       - name: Run instance creation
         run: |
           composer install --no-interaction --prefer-dist
@@ -34,7 +26,7 @@ jobs:
           sed -i 's|OCI_USER_ID=.*|OCI_USER_ID=${{ secrets.OCI_USER_OCID }}|' .env
           sed -i 's|OCI_TENANCY_ID=.*|OCI_TENANCY_ID=${{ secrets.OCI_TENANCY_OCID }}|' .env
           sed -i 's|OCI_KEY_FINGERPRINT=.*|OCI_KEY_FINGERPRINT=${{ secrets.OCI_FINGERPRINT }}|' .env
-          sed -i 's|OCI_PRIVATE_KEY_FILENAME=.*|OCI_PRIVATE_KEY_FILENAME=~/.oci/key.pem|' .env
+          sed -i "s|OCI_PRIVATE_KEY_FILENAME=.*|OCI_PRIVATE_KEY_FILENAME=$HOME/.oci/key.pem|" .env
           sed -i 's|OCI_SUBNET_ID=.*|OCI_SUBNET_ID=${{ secrets.OCI_SUBNET_ID }}|' .env
           sed -i 's|OCI_IMAGE_ID=.*|OCI_IMAGE_ID=${{ secrets.OCI_IMAGE_ID }}|' .env
           sed -i 's|OCI_AVAILABILITY_DOMAIN=.*|OCI_AVAILABILITY_DOMAIN=${{ secrets.OCI_AVAILABILITY_DOMAIN }}|' .env
