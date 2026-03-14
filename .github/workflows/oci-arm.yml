@@ -34,4 +34,5 @@ jobs:
           sed -i 's|OCI_SUBNET_ID=.*|OCI_SUBNET_ID=${{ secrets.OCI_SUBNET_ID }}|' .env
           sed -i 's|OCI_IMAGE_ID=.*|OCI_IMAGE_ID=${{ secrets.OCI_IMAGE_ID }}|' .env
           sed -i 's|OCI_SSH_AUTHORIZED_KEYS=.*|OCI_SSH_AUTHORIZED_KEYS=${{ secrets.SSH_AUTHORIZED_KEYS }}|' .env
+          sed -i 's|OCI_KEY_FILE_PATH=.*|OCI_KEY_FILE_PATH=~/.oci/key.pem|' .env
           php index.php
